@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
 from langchain_openai import ChatOpenAI
-
+import socket
 # Load environment variables
 load_dotenv()
 
@@ -37,12 +37,14 @@ st.caption("Interact with both Finance & HR MCP Agents through LangChain + Strea
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
-
+local_ip = socket.gethostbyname(socket.gethostname())
 async def query_agents(prompt):
     """Send query to both Finance & HR MCP Servers"""
     client = MultiServerMCPClient({
-        "finance": {"url": "http://localhost:8010/mcp", "transport": "streamable_http"},
-        "hr": {"url": "http://localhost:8011/mcp", "transport": "streamable_http"},
+       # "finance": {"url": "http://localhost:8010/mcp", "transport": "streamable_http"},
+       # "hr": {"url": "http://localhost:8011/mcp", "transport": "streamable_http"},
+         "finance": {"url": f"http://{local_ip}:8010/mcp", "transport": "streamable_http"},
+         "hr": {"url": f"http://{local_ip}:8011/mcp", "transport": "streamable_http"},
     })
 
     tools = await client.get_tools()
