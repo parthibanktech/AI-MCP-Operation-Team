@@ -1,5 +1,11 @@
 
 from mcp.server.fastmcp import FastMCP
+import socket
+
+def is_port_in_use(port: int) -> bool:
+    """Check if a port is already in use."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(("127.0.0.1", port)) == 0
 
 # Server with instructions
 mcp = FastMCP(
@@ -30,6 +36,12 @@ def get_budget_summary(department: str) -> dict:
         "remaining": 34568
     }
 
+
 if __name__ == "__main__":
-    print("Starting Finance MCP Server...")
-    mcp.run(transport="streamable-http")
+    print("Starting HR MCP Server...")
+    
+    # Prevent double-start on same port 
+    if is_port_in_use(8010):
+        print("⚠️  Port 8010 already in use — skipping server start.")
+    else:
+        mcp.run(transport="streamable-http")
